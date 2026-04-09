@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -49,7 +49,7 @@ const daysOfWeek = [
 
 export default function NewListingPage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, isReady } = useAuth()
   const { toast } = useToast()
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
@@ -73,6 +73,13 @@ export default function NewListingPage() {
   })
   const [isSaving, setIsSaving] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (!isReady) return
+    if (!user) {
+      router.replace(`/login?next=${encodeURIComponent("/dashboard/listings/new")}`)
+    }
+  }, [isReady, user, router])
 
   const handleAddImage = () => {
     if (imageInput.trim() && !images.includes(imageInput.trim())) {
@@ -201,6 +208,28 @@ export default function NewListingPage() {
     router.push("/dashboard/listings")
   }
 
+  if (!isReady) {
+    return (
+      <div className="min-h-screen bg-background">
+        <NavbarShell />
+        <main className="mx-auto flex max-w-5xl flex-col items-center justify-center px-4 py-24 text-center">
+          <p className="text-muted-foreground">Loading…</p>
+        </main>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <NavbarShell />
+        <main className="mx-auto flex max-w-5xl flex-col items-center justify-center px-4 py-24 text-center">
+          <p className="text-muted-foreground">Redirecting to sign in…</p>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <NavbarShell />
@@ -210,7 +239,7 @@ export default function NewListingPage() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" asChild>
-              <Link href="/dashboard">
+              <Link href="/listings">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>

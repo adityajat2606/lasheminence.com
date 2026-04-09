@@ -6,6 +6,7 @@ import { fetchSiteFeed } from "@/lib/site-connector";
 import { buildPostUrl, getPostTaskKey } from "@/lib/task-data";
 import { getMockPostsForTask } from "@/lib/mock-posts";
 import { SITE_CONFIG } from "@/lib/site-config";
+import { CATEGORY_OPTIONS } from "@/lib/categories";
 import { TaskPostCard } from "@/components/shared/task-post-card";
 
 export const revalidate = 3;
@@ -23,13 +24,14 @@ const compactText = (value: unknown) => {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; category?: string; task?: string; master?: string }>;
+  searchParams?: Promise<{ q?: string; category?: string; task?: string; master?: string; loc?: string }>;
 }) {
   const resolved = (await searchParams) || {};
   const query = (resolved.q || "").trim();
   const normalized = query.toLowerCase();
   const category = (resolved.category || "").trim().toLowerCase();
   const task = (resolved.task || "").trim().toLowerCase();
+  const locQuery = (resolved.loc || "").trim().toLowerCase();
   const useMaster = resolved.master !== "0";
   const feed = await fetchSiteFeed(
     useMaster ? 1000 : 300,
@@ -56,6 +58,13 @@ export default async function SearchPage({
     const tagsText = compactText(tags);
     const derivedCategory = categoryText || tagsText;
     if (category && !derivedCategory.includes(category)) return false;
+    if (locQuery.length) {
+      const locationText = compactText((content as any).location);
+      const addressText = compactText((content as any).address);
+      const cityText = compactText((content as any).city);
+      const combined = [locationText, addressText, cityText].filter(Boolean).join(" ");
+      if (!combined.includes(locQuery)) return false;
+    }
     if (task && typeText && typeText !== task) return false;
     if (!normalized.length) return true;
     return (
@@ -79,20 +88,45 @@ export default async function SearchPage({
           : "Browse the latest posts across every task."
       }
       actions={
-        <form action="/search" className="flex w-full gap-2 sm:w-auto">
+        <form
+          action="/search"
+          className="flex w-full flex-col gap-2 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-end sm:gap-2"
+        >
           <input type="hidden" name="master" value="1" />
-          {category ? <input type="hidden" name="category" value={category} /> : null}
           {task ? <input type="hidden" name="task" value={task} /> : null}
-          <div className="relative w-full sm:w-80">
+          <div className="relative w-full sm:w-56">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               name="q"
               defaultValue={query}
-              placeholder="Search across tasks..."
+              placeholder="Keywords..."
               className="h-11 pl-9"
             />
           </div>
-          <Button type="submit" className="h-11">
+          <div className="w-full sm:w-44">
+            <Input
+              name="loc"
+              defaultValue={(resolved.loc || "").trim()}
+              placeholder="City or area"
+              className="h-11"
+            />
+          </div>
+          <div className="w-full sm:w-48">
+            <select
+              name="category"
+              defaultValue={category || ""}
+              aria-label="Category"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">All categories</option>
+              {CATEGORY_OPTIONS.map((opt) => (
+                <option key={opt.slug} value={opt.slug}>
+                  {opt.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <Button type="submit" className="h-11 w-full sm:w-auto">
             Search
           </Button>
         </form>

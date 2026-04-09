@@ -48,7 +48,7 @@ const mergeListings = (stored: Listing[]) => {
 
 export default function DashboardListingsPage() {
   const { toast } = useToast()
-  const { user } = useAuth()
+  const { user, isReady } = useAuth()
   const [listings, setListings] = useState<Listing[]>(() => [...mockListings])
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -60,8 +60,15 @@ export default function DashboardListingsPage() {
   const [activeSheetId, setActiveSheetId] = useState<string | null>(null)
 
   const isUserListing = (listing: Listing) =>
-    listing.id.startsWith('user-') || (user && listing.owner.id === user.id)
+    listing.id.startsWith('user-') || (user != null && listing.owner?.id === user.id)
   const userListings = useMemo(() => listings.filter((listing) => isUserListing(listing)), [listings, user])
+
+  const newListingHref =
+    !isReady
+      ? '/dashboard/listings/new'
+      : user
+        ? '/dashboard/listings/new'
+        : `/login?next=${encodeURIComponent('/dashboard/listings/new')}`
   const allSelected = selectedIds.length === userListings.length && userListings.length > 0
   const selectedCount = selectedIds.length
 
@@ -118,7 +125,7 @@ export default function DashboardListingsPage() {
       description="Manage business listings and visibility."
       actions={
         <Button asChild>
-          <Link href="/dashboard/listings/new">New Listing</Link>
+          <Link href={newListingHref}>New Listing</Link>
         </Button>
       }
     >

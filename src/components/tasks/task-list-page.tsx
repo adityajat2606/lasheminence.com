@@ -25,8 +25,8 @@ const taskIcons: Record<TaskKey, any> = {
 }
 
 const variantShells = {
-  'listing-directory': 'bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.08),transparent_24%),linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)]',
-  'listing-showcase': 'bg-[linear-gradient(180deg,#ffffff_0%,#f4f9ff_100%)]',
+  'listing-directory': 'bg-gradient-to-b from-white via-zinc-50/80 to-zinc-100/60',
+  'listing-showcase': 'bg-gradient-to-b from-white via-zinc-50/80 to-zinc-100/60',
   'article-editorial': 'bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.08),transparent_20%),linear-gradient(180deg,#fff8ef_0%,#ffffff_100%)]',
   'article-journal': 'bg-[linear-gradient(180deg,#fffdf9_0%,#f7f1ea_100%)]',
   'image-masonry': 'bg-[linear-gradient(180deg,#09101d_0%,#111c2f_100%)] text-white',
@@ -78,11 +78,11 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
           button: 'bg-[#2f1d16] text-[#fff4e4] hover:bg-[#452920]',
         }
       : {
-          muted: 'text-slate-600',
-          panel: 'border border-slate-200 bg-white',
-          soft: 'border border-slate-200 bg-slate-50',
-          input: 'border border-slate-200 bg-white text-slate-950',
-          button: 'bg-slate-950 text-white hover:bg-slate-800',
+          muted: 'text-zinc-600',
+          panel: 'border border-zinc-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.06)]',
+          soft: 'border border-zinc-200 bg-zinc-50',
+          input: 'border border-zinc-200 bg-white text-zinc-900',
+          button: 'bg-[#ff2d55] text-white hover:bg-[#e6294d]',
         }
 
   return (

@@ -25,14 +25,9 @@ export default function AboutPage() {
       title={`About ${SITE_CONFIG.name}`}
       description={`${SITE_CONFIG.name} is a modern platform for creators, communities, and curated business discovery.`}
       actions={
-        <>
-          <Button variant="outline" asChild>
-            <Link href="/team">Meet the Team</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/contact">Contact Us</Link>
-          </Button>
-        </>
+        <Button asChild>
+          <Link href="/contact">Contact Us</Link>
+        </Button>
       }
     >
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">

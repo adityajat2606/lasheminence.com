@@ -117,13 +117,13 @@ export const taskIntroCopy: Record<
     title: 'Listings, services, and structured pages',
     paragraphs: [
       'Explore listings, services, brands, and discoverable pages across categories. Each entry is organized to make browsing clearer and help visitors quickly understand what a post offers.',
-      'Listings connect naturally with articles, images, resources, and other content types so supporting information stays easy to reach from the same platform.',
+      'Listings tie into search, your account, and owner tools on the same site so visitors can go from discovery to detail—or list their own business—without jumping between unrelated surfaces.',
       'Browse by category to compare posts in context, discover related content, and move between formats without losing your place.',
     ],
     links: [
-      { label: 'Read articles', href: '/articles' },
-      { label: 'Explore classifieds', href: '/classifieds' },
-      { label: 'View profiles', href: '/profile' },
+      { label: 'Search listings', href: '/search' },
+      { label: 'Browse listings', href: '/listings' },
+      { label: 'Add a listing', href: '/create/listing' },
     ],
   },
   article: {
