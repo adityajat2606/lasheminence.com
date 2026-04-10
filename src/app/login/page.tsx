@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Bookmark, Building2, FileText, Image as ImageIcon, Sparkles } from 'lucide-react'
 import { NavbarShell } from '@/components/shared/navbar-shell'
 import { Footer } from '@/components/shared/footer'
+import { LoginForm } from '@/components/auth/login-form'
 import { getFactoryState } from '@/design/factory/get-factory-state'
 import { getProductKind } from '@/design/factory/get-product-kind'
 import { LOGIN_PAGE_OVERRIDE_ENABLED, LoginPageOverride } from '@/overrides/login-page'
@@ -9,14 +10,14 @@ import { LOGIN_PAGE_OVERRIDE_ENABLED, LoginPageOverride } from '@/overrides/logi
 function getLoginConfig(kind: ReturnType<typeof getProductKind>) {
   if (kind === 'directory') {
     return {
-      shell: 'bg-[#f8fbff] text-slate-950',
-      panel: 'border border-slate-200 bg-white',
-      side: 'border border-slate-200 bg-slate-50',
-      muted: 'text-slate-600',
-      action: 'bg-slate-950 text-white hover:bg-slate-800',
+      shell: 'bg-gradient-to-b from-white to-zinc-100/90 text-zinc-900',
+      panel: 'border border-zinc-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]',
+      side: 'border border-zinc-200 bg-zinc-50/90',
+      muted: 'text-zinc-600',
+      action: 'bg-[#ff2d55] text-white hover:bg-[#e6294d]',
       icon: Building2,
-      title: 'Access your business dashboard',
-      body: 'Manage listings, verification details, contact info, and local discovery surfaces from one place.',
+      title: 'Sign in to your listing workspace',
+      body: 'Manage listings, saved places, and account settings. Your session is stored locally in this browser for demo use.',
     }
   }
   if (kind === 'editorial') {
@@ -55,10 +56,20 @@ function getLoginConfig(kind: ReturnType<typeof getProductKind>) {
   }
 }
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ next?: string }>
+}) {
   if (LOGIN_PAGE_OVERRIDE_ENABLED) {
     return <LoginPageOverride />
   }
+
+  const resolvedSearch = (await searchParams) || {}
+  const nextRedirect =
+    typeof resolvedSearch.next === 'string' && resolvedSearch.next.startsWith('/') && !resolvedSearch.next.startsWith('//')
+      ? resolvedSearch.next
+      : undefined
 
   const { recipe } = getFactoryState()
   const productKind = getProductKind(recipe)
@@ -82,12 +93,16 @@ export default function LoginPage() {
           </div>
 
           <div className={`rounded-[2rem] p-8 ${config.panel}`}>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-70">Welcome back</p>
-            <form className="mt-6 grid gap-4">
-              <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Email address" />
-              <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Password" type="password" />
-              <button type="submit" className={`inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold ${config.action}`}>Sign in</button>
-            </form>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">Welcome back</p>
+            {productKind === 'directory' ? (
+              <LoginForm actionClassName={config.action} mutedClassName={config.muted} redirectTo={nextRedirect} />
+            ) : (
+              <form className="mt-6 grid gap-4">
+                <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Email address" />
+                <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Password" type="password" />
+                <button type="submit" className={`inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold ${config.action}`}>Sign in</button>
+              </form>
+            )}
             <div className={`mt-6 flex items-center justify-between text-sm ${config.muted}`}>
               <Link href="/forgot-password" className="hover:underline">Forgot password?</Link>
               <Link href="/register" className="inline-flex items-center gap-2 font-semibold hover:underline">

@@ -9,11 +9,11 @@ import { CONTACT_PAGE_OVERRIDE_ENABLED, ContactPageOverride } from '@/overrides/
 function getTone(kind: ReturnType<typeof getProductKind>) {
   if (kind === 'directory') {
     return {
-      shell: 'bg-[#f8fbff] text-slate-950',
-      panel: 'border border-slate-200 bg-white',
-      soft: 'border border-slate-200 bg-slate-50',
-      muted: 'text-slate-600',
-      action: 'bg-slate-950 text-white hover:bg-slate-800',
+      shell: 'bg-gradient-to-b from-white to-zinc-100/90 text-zinc-900',
+      panel: 'border border-zinc-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.06)]',
+      soft: 'border border-zinc-200 bg-zinc-50',
+      muted: 'text-zinc-600',
+      action: 'bg-[#ff2d55] text-white hover:bg-[#e6294d]',
     }
   }
   if (kind === 'editorial') {

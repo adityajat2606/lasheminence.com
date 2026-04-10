@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
 import { useToast } from '@/components/ui/use-toast'
+import { useAuth } from '@/lib/auth-context'
 import { FileText, Plus, Tag, Bookmark, Settings, Search } from 'lucide-react'
 
 const quickLinks = [
@@ -23,6 +24,7 @@ const createActions = [
 export function CommandPalette() {
   const router = useRouter()
   const { toast } = useToast()
+  const { isAuthenticated, isReady } = useAuth()
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -63,7 +65,11 @@ export function CommandPalette() {
             <CommandItem
               key={item.href}
               onSelect={() => {
-                router.push(item.href)
+                const dest =
+                  !isReady || isAuthenticated
+                    ? item.href
+                    : `/login?next=${encodeURIComponent(item.href)}`
+                router.push(dest)
                 setOpen(false)
               }}
             >

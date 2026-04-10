@@ -1,9 +1,10 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { FileText, Building2, LayoutGrid, Tag, Github, Twitter, Linkedin, Image as ImageIcon, User, ArrowRight, Sparkles } from 'lucide-react'
+import { FileText, Building2, LayoutGrid, Tag, Github, Twitter, Linkedin, Image as ImageIcon, User, Sparkles } from 'lucide-react'
 import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
-import { siteContent } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
 import { FOOTER_OVERRIDE_ENABLED, FooterOverride } from '@/overrides/footer'
+import { FooterAddListingLink } from '@/components/shared/footer-add-listing-link'
 
 const taskIcons: Record<TaskKey, any> = {
   article: FileText,
@@ -28,7 +29,6 @@ const footerLinks = {
     { name: 'About', href: '/about' },
     { name: 'Team', href: '/team' },
     { name: 'Careers', href: '/careers' },
-    { name: 'Blog', href: '/blog' },
     { name: 'Press', href: '/press' },
   ],
   resources: [
@@ -51,157 +51,207 @@ const socialLinks = [
   { name: 'LinkedIn', href: 'https://linkedin.com', icon: Linkedin },
 ]
 
+function FootHeading({ children }: { children: ReactNode }) {
+  return (
+    <h3 className="text-base font-bold text-zinc-800">
+      {children}
+      <span className="mt-2 block h-0.5 w-9 rounded-full bg-[#ff2d55]" aria-hidden />
+    </h3>
+  )
+}
+
+function FootLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className="flex items-start gap-2 text-sm text-zinc-600 transition hover:text-[#ff2d55]">
+      <span className="select-none text-zinc-400" aria-hidden>
+        »
+      </span>
+      {children}
+    </Link>
+  )
+}
+
+function ListingDirectoryFooter({ variant = 'default' }: { variant?: 'default' | 'dense' | 'editorial' }) {
+  const isDense = variant === 'dense'
+  const isEditorial = variant === 'editorial'
+
+  return (
+    <footer className="border-t border-zinc-200 bg-gradient-to-b from-[#f6f7f9] to-[#eef0f4] text-zinc-700">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="lg:col-span-1">
+            {isEditorial ? (
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#ff2d55]/25 bg-[#ff2d55]/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#ff2d55]">
+                <Sparkles className="h-3.5 w-3.5" />
+                Directory highlights
+              </div>
+            ) : null}
+            <FootHeading>{isEditorial ? 'Our story' : 'About'}</FootHeading>
+            <p className="mt-5 text-sm leading-relaxed text-zinc-600">
+              {isEditorial
+                ? `${SITE_CONFIG.name} highlights trusted listings and local spots so visitors can compare options quickly and owners can present their business clearly.`
+                : `${SITE_CONFIG.name} helps people discover local businesses and book-worthy spots. List your space, keep details fresh, and get found by the right customers.`}
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-zinc-500">
+              {isEditorial
+                ? 'Save favorites, search by category or area, and jump into listings when you are ready to act.'
+                : 'Browse curated listings, save favorites, and manage your posts from your account.'}
+            </p>
+          </div>
+          <div>
+            <FootHeading>Useful links</FootHeading>
+            <ul className="mt-5 space-y-3">
+              <li>
+                <FootLink href="/">Home</FootLink>
+              </li>
+              <li>
+                <FootLink href="/listings">Browse listings</FootLink>
+              </li>
+              <li>
+                <FootLink href="/privacy">Privacy</FootLink>
+              </li>
+              <li>
+                <FootLink href="/contact">Contact</FootLink>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <FootHeading>Explore</FootHeading>
+            <ul className="mt-5 space-y-3">
+              <li>
+                <FootLink href="/search">Search</FootLink>
+              </li>
+              <li>
+                <FootLink href="/about">About us</FootLink>
+              </li>
+              <li>
+                <FootLink href="/help">How it works</FootLink>
+              </li>
+              <li>
+                <FootLink href="/terms">Terms</FootLink>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <FootHeading>Help</FootHeading>
+            <ul className="mt-5 space-y-3">
+              <li>
+                <FootLink href="/login">Sign in</FootLink>
+              </li>
+              <li>
+                <FootLink href="/register">Create account</FootLink>
+              </li>
+              <li>
+                <FooterAddListingLink />
+              </li>
+              <li>
+                <FootLink href="/help">Help center</FootLink>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {isDense ? (
+          <div className="mt-12 grid gap-10 border-t border-zinc-200/80 pt-12 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <FootHeading>Listings &amp; surfaces</FootHeading>
+              <ul className="mt-5 space-y-3">
+                {footerLinks.platform.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-2 text-sm text-zinc-600 transition hover:text-[#ff2d55]"
+                      >
+                        {Icon ? <Icon className="h-4 w-4 shrink-0 text-zinc-400" /> : null}
+                        {item.name}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+            <div>
+              <FootHeading>Resources</FootHeading>
+              <ul className="mt-5 space-y-3">
+                {footerLinks.resources.map((item) => (
+                  <li key={item.name}>
+                    <FootLink href={item.href}>{item.name}</FootLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <FootHeading>Legal</FootHeading>
+              <ul className="mt-5 space-y-3">
+                {footerLinks.legal.map((item) => (
+                  <li key={item.name}>
+                    <FootLink href={item.href}>{item.name}</FootLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <FootHeading>Connect</FootHeading>
+              <p className="mt-5 text-sm text-zinc-600">Follow {SITE_CONFIG.name} for updates and new listings.</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {socialLinks.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-600 shadow-sm transition hover:border-[#ff2d55]/40 hover:text-[#ff2d55]"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span className="sr-only">{item.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {isEditorial && !isDense ? (
+          <div className="mt-10 border-t border-zinc-200/80 pt-10">
+            <FootHeading>Company</FootHeading>
+            <ul className="mt-5 flex flex-wrap gap-x-8 gap-y-3">
+              {footerLinks.company.map((item) => (
+                <li key={item.name}>
+                  <FootLink href={item.href}>{item.name}</FootLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <div className="mt-12 border-t border-zinc-200/80 pt-6 text-center text-sm text-zinc-500">
+          Copyright © {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  )
+}
+
 export function Footer() {
   if (FOOTER_OVERRIDE_ENABLED) {
     return <FooterOverride />
   }
 
   const { recipe } = getFactoryState()
-  const enabledTasks = SITE_CONFIG.tasks.filter((task) => task.enabled)
-  const primaryTask = enabledTasks.find((task) => task.key === recipe.primaryTask) || enabledTasks[0]
 
   if (recipe.footer === 'minimal-footer') {
-    return (
-      <footer className="border-t border-[#d7deca] bg-[#f4f6ef] text-[#1f2617]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div>
-            <p className="text-lg font-semibold">{SITE_CONFIG.name}</p>
-            <p className="mt-1 text-sm text-[#56604b]">{SITE_CONFIG.description}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {enabledTasks.slice(0, 5).map((task) => (
-              <Link key={task.key} href={task.route} className="rounded-lg border border-[#d7deca] bg-white px-3 py-2 text-sm font-medium text-[#1f2617] hover:bg-[#ebefdf]">
-                {task.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </footer>
-    )
+    return <ListingDirectoryFooter />
   }
 
   if (recipe.footer === 'dense-footer') {
-    return (
-      <footer className="border-t border-white/10 bg-[linear-gradient(180deg,#07111f_0%,#0b1a2e_100%)] text-white">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr_1fr]">
-            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-7">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/12 bg-white/8 p-1.5">
-                  <img src="/favicon.png?v=20260401" alt={`${SITE_CONFIG.name} logo`} width="48" height="48" className="h-full w-full object-contain" />
-                </div>
-                <div>
-                  <p className="text-lg font-semibold">{SITE_CONFIG.name}</p>
-                  <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{siteContent.footer.tagline}</p>
-                </div>
-              </div>
-              <p className="mt-5 max-w-md text-sm leading-7 text-slate-300">{SITE_CONFIG.description}</p>
-              {primaryTask ? (
-                <Link href={primaryTask.route} className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#8df0c8] px-4 py-2.5 text-sm font-semibold text-[#07111f] hover:bg-[#77dfb8]">
-                  Explore {primaryTask.label}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              ) : null}
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-3">
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Surfaces</h3>
-                <ul className="mt-4 space-y-3 text-sm text-slate-200">
-                  {footerLinks.platform.map((item: any) => (
-                    <li key={item.name}><Link href={item.href} className="flex items-center gap-2 hover:text-white">{item.icon ? <item.icon className="h-4 w-4" /> : null}{item.name}</Link></li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Resources</h3>
-                <ul className="mt-4 space-y-3 text-sm text-slate-200">
-                  {footerLinks.resources.map((item) => (
-                    <li key={item.name}><Link href={item.href} className="hover:text-white">{item.name}</Link></li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Connect</h3>
-                <div className="mt-4 flex gap-3">
-                  {socialLinks.map((item) => (
-                    <Link key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/10 bg-white/8 p-2.5 text-slate-200 hover:bg-white/12 hover:text-white">
-                      <item.icon className="h-4 w-4" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-10 border-t border-white/10 pt-5 text-sm text-slate-400">&copy; {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.</div>
-        </div>
-      </footer>
-    )
+    return <ListingDirectoryFooter variant="dense" />
   }
 
   if (recipe.footer === 'editorial-footer') {
-    return (
-      <footer className="border-t border-[#dbc6b6] bg-[linear-gradient(180deg,#fff9f0_0%,#fff1df_100%)] text-[#2f1d16]">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#dbc6b6] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#72594a]">
-                <Sparkles className="h-3.5 w-3.5" />
-                Editorial desk
-              </div>
-              <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">{SITE_CONFIG.name}</h3>
-              <p className="mt-4 max-w-md text-sm leading-7 text-[#72594a]">{SITE_CONFIG.description}</p>
-            </div>
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8b6d5a]">Sections</h4>
-              <ul className="mt-4 space-y-3 text-sm">
-                {footerLinks.platform.map((item: any) => (
-                  <li key={item.name}><Link href={item.href} className="hover:text-[#2f1d16]">{item.name}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8b6d5a]">Company</h4>
-              <ul className="mt-4 space-y-3 text-sm">
-                {footerLinks.company.map((item) => (
-                  <li key={item.name}><Link href={item.href} className="hover:text-[#2f1d16]">{item.name}</Link></li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
-    )
+    return <ListingDirectoryFooter variant="editorial" />
   }
 
-  return (
-    <footer className="border-t border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] text-slate-950">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.8fr]">
-          <div>
-            <Link href="/" className="flex items-center gap-3">
-              <div className="h-11 w-11 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
-                <img src="/favicon.png?v=20260401" alt={`${SITE_CONFIG.name} logo`} width="44" height="44" className="h-full w-full object-contain" />
-              </div>
-              <div>
-                <span className="block text-lg font-semibold">{SITE_CONFIG.name}</span>
-                <span className="text-xs uppercase tracking-[0.22em] text-slate-500">{siteContent.footer.tagline}</span>
-              </div>
-            </Link>
-            <p className="mt-5 max-w-sm text-sm leading-7 text-slate-600">{SITE_CONFIG.description}</p>
-          </div>
-          {(['platform', 'company', 'resources', 'legal'] as const).map((section) => (
-            <div key={section}>
-              <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">{section}</h3>
-              <ul className="mt-5 space-y-3 text-sm text-slate-600">
-                {footerLinks[section].map((item: any) => (
-                  <li key={item.name}><Link href={item.href} className="flex items-center gap-2 hover:text-slate-950">{item.icon ? <item.icon className="h-4 w-4" /> : null}{item.name}</Link></li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">&copy; {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.</div>
-      </div>
-    </footer>
-  )
+  return <ListingDirectoryFooter />
 }
