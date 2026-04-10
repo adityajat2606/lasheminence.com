@@ -8,6 +8,8 @@ import { loadFromStorage, saveToStorage, storageKeys } from '@/lib/local-storage
 interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
+  /** True after client has read session from localStorage (avoids flash redirect before hydrate). */
+  isReady: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
@@ -19,6 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [isReady, setIsReady] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -26,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedUser) {
       setUser(storedUser)
     }
+    setIsReady(true)
   }, [])
 
   const buildUser = useCallback((overrides: Partial<User>) => {
@@ -102,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isAuthenticated: !!user,
+        isReady,
         isLoading,
         login,
         logout,

@@ -4,8 +4,15 @@ import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Search, Menu, X, User, FileText, Building2, LayoutGrid, Tag, Image as ImageIcon, ChevronRight, Sparkles, MapPin, Plus } from 'lucide-react'
+import { Search, Menu, X, User, FileText, Building2, LayoutGrid, Tag, Image as ImageIcon, ChevronRight, Sparkles, MapPin, Plus, LogIn, UserPlus, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/lib/auth-context'
 import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
@@ -66,27 +73,6 @@ const variantClasses = {
   },
 } as const
 
-const directoryPalette = {
-  'directory-clean': {
-    shell: 'border-b border-slate-200 bg-white/94 text-slate-950 shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl',
-    logo: 'rounded-2xl border border-slate-200 bg-slate-50',
-    nav: 'text-slate-600 hover:text-slate-950',
-    search: 'border border-slate-200 bg-slate-50 text-slate-600',
-    cta: 'bg-slate-950 text-white hover:bg-slate-800',
-    post: 'border border-slate-200 bg-white text-slate-950 hover:bg-slate-50',
-    mobile: 'border-t border-slate-200 bg-white',
-  },
-  'market-utility': {
-    shell: 'border-b border-[#d7deca] bg-[#f4f6ef]/96 text-[#1f2617] shadow-[0_1px_0_rgba(64,76,34,0.06)] backdrop-blur-xl',
-    logo: 'rounded-xl border border-[#d7deca] bg-white',
-    nav: 'text-[#56604b] hover:text-[#1f2617]',
-    search: 'border border-[#d7deca] bg-white text-[#56604b]',
-    cta: 'bg-[#1f2617] text-[#edf5dc] hover:bg-[#2f3a24]',
-    post: 'border border-[#d7deca] bg-white text-[#1f2617] hover:bg-[#eef2e4]',
-    mobile: 'border-t border-[#d7deca] bg-[#f4f6ef]',
-  },
-} as const
-
 export function Navbar() {
   if (NAVBAR_OVERRIDE_ENABLED) {
     return <NavbarOverride />
@@ -108,139 +94,170 @@ export function Navbar() {
   const isDirectoryProduct = recipe.homeLayout === 'listing-home' || recipe.homeLayout === 'classified-home'
 
   if (isDirectoryProduct) {
-    const palette = directoryPalette[(recipe.brandPack === 'market-utility' ? 'market-utility' : 'directory-clean') as keyof typeof directoryPalette]
+    const shell = 'border-b border-zinc-200/90 bg-white/95 text-zinc-900 shadow-[0_1px_0_rgba(0,0,0,0.04)] backdrop-blur-md'
+    const navBtn =
+      'inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-900'
+    const navActive = 'bg-[#ff2d55]/12 text-[#ff2d55]'
+    const cta = 'rounded-full bg-[#ff2d55] text-white shadow-sm hover:bg-[#e6294d]'
+
+    const linkClass = (href: string) => cn(navBtn, pathname === href || (href !== '/' && pathname.startsWith(href)) ? navActive : '')
 
     return (
-      <>
-        <header className={cn('sticky top-0 z-50 w-full xl:hidden', palette.shell)}>
-          <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-            <div className="flex min-w-0 items-center gap-3">
-              <Link href="/" className="flex min-w-0 items-center gap-3">
-                <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden p-1.5', palette.logo)}>
-                  <img src="/favicon.png?v=20260401" alt={`${SITE_CONFIG.name} logo`} width="44" height="44" className="h-full w-full object-contain" />
-                </div>
-                <div className="min-w-0">
-                  <span className="block truncate text-lg font-semibold">{SITE_CONFIG.name}</span>
-                  <span className="block truncate text-[10px] uppercase tracking-[0.22em] opacity-60">{siteContent.navbar.tagline}</span>
-                </div>
-              </Link>
+      <header className={cn('sticky top-0 z-50 w-full', shell)}>
+        <nav className="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff2d55]/12">
+              <MapPin className="h-5 w-5 text-[#ff2d55]" aria-hidden />
+            </span>
+            <div className="min-w-0 leading-tight">
+              <span className="block truncate text-lg font-bold tracking-tight">{SITE_CONFIG.name}</span>
+              <span className="block truncate text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500">{siteContent.navbar.tagline}</span>
             </div>
+          </Link>
 
-            <div className="flex shrink-0 items-center gap-2">
-              {!isAuthenticated ? (
-                <Button size="sm" asChild className={cn('rounded-full', palette.cta)}>
-                  <Link href="/register">
-                    <Plus className="mr-1 h-4 w-4" />
-                    Add Listing
-                  </Link>
-                </Button>
-              ) : (
-                <NavbarAuthControls />
-              )}
-              <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
-          </nav>
-
-          {isMobileMenuOpen && (
-            <div className={palette.mobile}>
-              <div className="space-y-2 px-4 py-4">
-                <div className={cn('mb-3 flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium', palette.search)}>
-                  <Search className="h-4 w-4" />
-                  Find businesses, spaces, and services
-                </div>
-                {mobileNavigation.map((item) => {
-                  const isActive = pathname.startsWith(item.href)
-                  return (
-                    <Link key={item.name} href={item.href} onClick={() => setIsMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors', isActive ? 'bg-foreground text-background' : palette.post)}>
-                      <item.icon className="h-5 w-5" />
-                      {item.name}
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-        </header>
-
-        <aside className={cn('hidden xl:fixed xl:inset-y-0 xl:left-0 xl:z-40 xl:flex xl:w-80 xl:flex-col xl:border-r xl:px-6 xl:py-7', palette.shell)}>
-          <div className="flex h-full flex-col">
-            <Link href="/" className="flex items-center gap-3">
-              <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden p-1.5', palette.logo)}>
-                <img src="/favicon.png?v=20260401" alt={`${SITE_CONFIG.name} logo`} width="48" height="48" className="h-full w-full object-contain" />
-              </div>
-              <div className="min-w-0">
-                <span className="block truncate text-xl font-semibold">{SITE_CONFIG.name}</span>
-                <span className="block truncate text-[10px] uppercase tracking-[0.24em] opacity-60">{siteContent.navbar.tagline}</span>
-              </div>
+          <div className="hidden items-center gap-0.5 lg:flex">
+            <Link href="/" className={linkClass('/')}>
+              Home
+            </Link>
+            <Link href="/listings" className={linkClass('/listings')}>
+              Browse listings
+            </Link>
+            <Link href="/search" className={linkClass('/search')}>
+              Search
             </Link>
 
-            <div className={cn('mt-7 flex items-center gap-3 rounded-[1.4rem] px-4 py-3 text-sm', palette.search)}>
-              <Search className="h-4 w-4 shrink-0" />
-              <div className="min-w-0">
-                <div className="truncate font-medium">Find local businesses</div>
-                <div className="truncate text-xs opacity-70">Search by service, category, or city</div>
-              </div>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className={cn(navBtn, 'data-[state=open]:bg-zinc-100')}>
+                My hub
+                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="min-w-[12rem]">
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/listings">My listings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/saved">Saved</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">Account settings</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            {primaryTask ? (
-              <Link href={primaryTask.route} className="mt-5 inline-flex items-center gap-2 self-start rounded-full border border-current/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] opacity-75">
-                <Sparkles className="h-3.5 w-3.5" />
-                {primaryTask.label}
-              </Link>
-            ) : null}
+            <DropdownMenu>
+              <DropdownMenuTrigger className={cn(navBtn, 'data-[state=open]:bg-zinc-100')}>
+                Company
+                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[11rem]">
+                <DropdownMenuItem asChild>
+                  <Link href="/about">About</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/contact">Contact</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/help">Help</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/privacy">Privacy</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-            <nav className="mt-8 space-y-2">
-              {primaryNavigation.map((task) => {
-                const isActive = pathname.startsWith(task.route)
-                const Icon = taskIcons[task.key] || LayoutGrid
-                return (
-                  <Link
-                    key={task.key}
-                    href={task.route}
-                    className={cn(
-                      'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors',
-                      isActive ? 'bg-foreground text-background' : palette.post,
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <span className="truncate">{task.label}</span>
+          <div className="flex shrink-0 items-center gap-2">
+            {isAuthenticated ? (
+              <div className="hidden items-center gap-2 sm:flex">
+                <Button size="sm" asChild className={cn('h-9 gap-1.5 px-4', cta)}>
+                  <Link href="/create/listing">
+                    <UserPlus className="h-4 w-4" />
+                    Add listing
                   </Link>
-                )
-              })}
-            </nav>
-
-            <div className="mt-8 grid gap-3">
-              <div className={cn('rounded-[1.6rem] px-4 py-4 text-sm', palette.post)}>
-                <div className="flex items-center gap-2 font-semibold">
-                  <MapPin className="h-4 w-4" />
-                  Local discovery
-                </div>
-                <p className="mt-2 text-xs leading-6 opacity-75">Use business listings, classifieds, and support lanes without cramped top navigation.</p>
+                </Button>
+                <NavbarAuthControls directoryNav />
               </div>
-            </div>
+            ) : (
+              <>
+                <Button size="sm" asChild className={cn('hidden h-9 gap-1.5 px-4 sm:flex', cta)}>
+                  <Link href="/login">
+                    <LogIn className="h-4 w-4" />
+                    Sign In
+                  </Link>
+                </Button>
+                <Button size="sm" variant="outline" asChild className="h-9 border-zinc-200 px-4 text-zinc-800 hover:bg-zinc-50">
+                  <Link href="/register">Create account</Link>
+                </Button>
+              </>
+            )}
+            <Button variant="ghost" size="icon" className="rounded-full lg:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+        </nav>
 
-            <div className="mt-auto space-y-3 pt-8">
-              {isAuthenticated ? (
-                <NavbarAuthControls />
-              ) : (
-                <div className="space-y-3">
-                  <Button variant="ghost" size="sm" asChild className="w-full justify-center rounded-full px-4">
-                    <Link href="/login">Sign In</Link>
+        {isMobileMenuOpen ? (
+          <div className="border-t border-zinc-100 bg-white lg:hidden">
+            <div className="space-y-1 px-4 py-4">
+              <Link href="/search" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 rounded-2xl bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-700">
+                <Search className="h-4 w-4" />
+                Search listings
+              </Link>
+              {[
+                { href: '/', label: 'Home' },
+                { href: '/listings', label: 'Browse listings' },
+                { href: '/about', label: 'About' },
+                { href: '/contact', label: 'Contact' },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    'block rounded-2xl px-4 py-3 text-sm font-semibold',
+                    pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)) ? navActive : 'text-zinc-800 hover:bg-zinc-50',
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {!isAuthenticated ? (
+                <div className="flex flex-col gap-2 pt-2">
+                  <Button asChild className={cn('w-full rounded-full', cta)}>
+                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Link>
                   </Button>
-                  <Button size="sm" asChild className={cn('w-full justify-center rounded-full', palette.cta)}>
-                    <Link href="/register">
-                      <Plus className="mr-1 h-4 w-4" />
-                      Add Listing
+                  <Button asChild variant="outline" className="w-full rounded-full border-zinc-200">
+                    <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                      Create account
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="pt-2">
+                  <Button asChild className={cn('w-full rounded-full', cta)}>
+                    <Link href="/create/listing" onClick={() => setIsMobileMenuOpen(false)}>
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Add listing
                     </Link>
                   </Button>
                 </div>
               )}
+              {isAuthenticated ? (
+                <div className="flex flex-col gap-3 border-t border-zinc-100 pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Account</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <NavbarAuthControls directoryNav />
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
-        </aside>
-      </>
+        ) : null}
+      </header>
     )
   }
 

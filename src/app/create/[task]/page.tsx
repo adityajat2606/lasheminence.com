@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, Save } from "lucide-react";
@@ -165,7 +165,7 @@ const FORM_CONFIG: Record<TaskKey, { title: string; description: string; fields:
 };
 
 export default function CreateTaskPage() {
-  const { user } = useAuth();
+  const { user, isReady } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const params = useParams();
@@ -179,6 +179,14 @@ export default function CreateTaskPage() {
 
   const [values, setValues] = useState<Record<string, string>>({});
   const [uploadingPdf, setUploadingPdf] = useState(false);
+
+  useEffect(() => {
+    if (!taskConfig || !formConfig) return;
+    if (!isReady) return;
+    if (!user) {
+      router.replace(`/login?next=${encodeURIComponent(`/create/${taskKey}`)}`);
+    }
+  }, [taskConfig, formConfig, isReady, user, router, taskKey]);
 
   if (!taskConfig || !formConfig) {
     return (
@@ -197,19 +205,32 @@ export default function CreateTaskPage() {
     );
   }
 
+  if (!isReady) {
+    return (
+      <div className="min-h-screen bg-background">
+        <NavbarShell />
+        <main className="mx-auto flex max-w-3xl flex-col items-center justify-center px-4 py-24 text-center">
+          <p className="text-muted-foreground">Loading…</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <NavbarShell />
+        <main className="mx-auto flex max-w-3xl flex-col items-center justify-center px-4 py-24 text-center">
+          <p className="text-muted-foreground">Redirecting to sign in…</p>
+        </main>
+      </div>
+    );
+  }
+
   const updateValue = (key: string, value: string) =>
     setValues((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmit = () => {
-    if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in before creating content.",
-      });
-      router.push("/login");
-      return;
-    }
-
     const missing = formConfig.fields.filter((field) => field.required && !values[field.key]);
     if (missing.length) {
       toast({
