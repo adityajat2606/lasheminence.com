@@ -1,4 +1,4 @@
-import { PageShell } from "@/components/shared/page-shell";
+import { BrandMarketingShell } from "@/components/marketing/brand-marketing-shell";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -11,8 +11,7 @@ import { TaskPostCard } from "@/components/shared/task-post-card";
 
 export const revalidate = 3;
 
-const matchText = (value: string, query: string) =>
-  value.toLowerCase().includes(query);
+const matchText = (value: string, query: string) => value.toLowerCase().includes(query);
 
 const stripHtml = (value: string) => value.replace(/<[^>]*>/g, " ");
 
@@ -39,12 +38,11 @@ export default async function SearchPage({
       ? { fresh: true, category: category || undefined, task: task || undefined }
       : undefined
   );
-  const posts =
-    feed?.posts?.length
-      ? feed.posts
-      : useMaster
-        ? []
-        : SITE_CONFIG.tasks.flatMap((task) => getMockPostsForTask(task.key));
+  const posts = feed?.posts?.length
+    ? feed.posts
+    : useMaster
+      ? []
+      : SITE_CONFIG.tasks.flatMap((t) => getMockPostsForTask(t.key));
 
   const filtered = posts.filter((post) => {
     const content = post.content && typeof post.content === "object" ? post.content : {};
@@ -79,72 +77,79 @@ export default async function SearchPage({
 
   const results = normalized.length > 0 ? filtered : filtered.slice(0, 24);
 
-  return (
-    <PageShell
-      title="Search"
-      description={
-        query
-          ? `Results for "${query}"`
-          : "Browse the latest posts across every task."
-      }
-      actions={
-        <form
-          action="/search"
-          className="flex w-full flex-col gap-2 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-end sm:gap-2"
+  const searchForm = (
+    <form
+      action="/search"
+      className="flex w-full flex-col gap-3 rounded-2xl border border-[#e8ddd4] bg-white/90 p-4 shadow-[0_14px_40px_rgba(183,110,121,0.06)] sm:flex-row sm:flex-wrap sm:items-end"
+    >
+      <input type="hidden" name="master" value="1" />
+      {task ? <input type="hidden" name="task" value={task} /> : null}
+      <div className="relative w-full sm:min-w-[200px] sm:flex-1">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#b76e79]" />
+        <Input
+          name="q"
+          defaultValue={query}
+          placeholder="Keywords, style, or studio name…"
+          className="h-11 border-[#e0cfc9] bg-[#fffdfb] pl-9 text-[#1a1614] placeholder:text-[#a89890]"
+        />
+      </div>
+      <div className="w-full sm:w-40">
+        <Input
+          name="loc"
+          defaultValue={(resolved.loc || "").trim()}
+          placeholder="City or area"
+          className="h-11 border-[#e0cfc9] bg-[#fffdfb] text-[#1a1614] placeholder:text-[#a89890]"
+        />
+      </div>
+      <div className="w-full sm:w-44">
+        <select
+          name="category"
+          defaultValue={category || ""}
+          aria-label="Category"
+          className="flex h-11 w-full rounded-md border border-[#e0cfc9] bg-[#fffdfb] px-3 text-sm text-[#1a1614] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b76e79]/25"
         >
-          <input type="hidden" name="master" value="1" />
-          {task ? <input type="hidden" name="task" value={task} /> : null}
-          <div className="relative w-full sm:w-56">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              name="q"
-              defaultValue={query}
-              placeholder="Keywords..."
-              className="h-11 pl-9"
-            />
-          </div>
-          <div className="w-full sm:w-44">
-            <Input
-              name="loc"
-              defaultValue={(resolved.loc || "").trim()}
-              placeholder="City or area"
-              className="h-11"
-            />
-          </div>
-          <div className="w-full sm:w-48">
-            <select
-              name="category"
-              defaultValue={category || ""}
-              aria-label="Category"
-              className="flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="">All categories</option>
-              {CATEGORY_OPTIONS.map((opt) => (
-                <option key={opt.slug} value={opt.slug}>
-                  {opt.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Button type="submit" className="h-11 w-full sm:w-auto">
-            Search
-          </Button>
-        </form>
+          <option value="">All categories</option>
+          {CATEGORY_OPTIONS.map((opt) => (
+            <option key={opt.slug} value={opt.slug}>
+              {opt.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <Button type="submit" className="h-11 w-full bg-[#b76e79] text-white hover:bg-[#9e5e6a] sm:w-auto">
+        Search
+      </Button>
+    </form>
+  );
+
+  return (
+    <BrandMarketingShell
+      eyebrow="Directory search"
+      title={query ? `Results for “${query}”` : "Find your next lash experience"}
+      subtitle={
+        query
+          ? "Refine by area and category to surface the best match for your appointment."
+          : "Search across listings and services—combine keywords with city filters to narrow the field."
       }
+      headerAside={searchForm}
     >
       {results.length ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {results.map((post) => {
-            const task = getPostTaskKey(post);
-            const href = task ? buildPostUrl(task, post.slug) : `/posts/${post.slug}`;
+            const postTask = getPostTaskKey(post);
+            const href = postTask ? buildPostUrl(postTask, post.slug) : `/posts/${post.slug}`;
             return <TaskPostCard key={post.id} post={post} href={href} />;
           })}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
-          No matching posts yet.
+        <div className="rounded-2xl border border-dashed border-[#e0cfc9] bg-[#fffdfb] px-8 py-16 text-center">
+          <p className="text-base font-medium text-[#1a1614]">No matches yet</p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#6b534c]">
+            Try a broader keyword, remove a filter, or browse the full directory to explore featured
+            studios.
+          </p>
         </div>
       )}
-    </PageShell>
+    </BrandMarketingShell>
   );
 }
