@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Search, Menu, X, User, FileText, Building2, LayoutGrid, Tag, Image as ImageIcon, ChevronRight, Sparkles, MapPin, Plus, LogIn, UserPlus, ChevronDown } from 'lucide-react'
+import { Search, Menu, X, User, FileText, Building2, LayoutGrid, Tag, Image as ImageIcon, ChevronRight, Sparkles, Plus, LogIn, UserPlus, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -25,6 +25,9 @@ const NavbarAuthControls = dynamic(() => import('@/components/shared/navbar-auth
   loading: () => null,
 })
 
+/** Full brand lockup for the header (distinct from square favicon/tab icon). */
+const SITE_LOGO_SRC = '/logo.png?v=20260416'
+
 const taskIcons: Record<TaskKey, any> = {
   article: FileText,
   listing: Building2,
@@ -41,7 +44,7 @@ const taskIcons: Record<TaskKey, any> = {
 const variantClasses = {
   'compact-bar': {
     shell: 'border-b border-slate-200/80 bg-white/88 text-slate-950 backdrop-blur-xl',
-    logo: 'rounded-2xl border border-slate-200 bg-white shadow-sm',
+    logo: 'h-12 max-w-[168px] rounded-xl border border-slate-200 bg-white px-2 shadow-sm',
     active: 'bg-slate-950 text-white',
     idle: 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
     cta: 'rounded-full bg-slate-950 text-white hover:bg-slate-800',
@@ -49,7 +52,7 @@ const variantClasses = {
   },
   'editorial-bar': {
     shell: 'border-b border-[#d7c4b3] bg-[#fff7ee]/90 text-[#2f1d16] backdrop-blur-xl',
-    logo: 'rounded-full border border-[#dbc6b6] bg-white shadow-sm',
+    logo: 'h-12 max-w-[168px] rounded-xl border border-[#dbc6b6] bg-white px-2 shadow-sm',
     active: 'bg-[#2f1d16] text-[#fff4e4]',
     idle: 'text-[#72594a] hover:bg-[#f2e5d4] hover:text-[#2f1d16]',
     cta: 'rounded-full bg-[#2f1d16] text-[#fff4e4] hover:bg-[#452920]',
@@ -57,7 +60,7 @@ const variantClasses = {
   },
   'floating-bar': {
     shell: 'border-b border-transparent bg-transparent text-white',
-    logo: 'rounded-[1.35rem] border border-white/12 bg-white/8 shadow-[0_16px_48px_rgba(15,23,42,0.22)] backdrop-blur',
+    logo: 'h-12 max-w-[168px] rounded-xl border border-white/12 bg-white/8 px-2 shadow-[0_16px_48px_rgba(15,23,42,0.22)] backdrop-blur',
     active: 'bg-[#8df0c8] text-[#07111f]',
     idle: 'text-slate-200 hover:bg-white/10 hover:text-white',
     cta: 'rounded-full bg-[#8df0c8] text-[#07111f] hover:bg-[#77dfb8]',
@@ -65,7 +68,7 @@ const variantClasses = {
   },
   'utility-bar': {
     shell: 'border-b border-[#d7deca] bg-[#f4f6ef]/94 text-[#1f2617] backdrop-blur-xl',
-    logo: 'rounded-xl border border-[#d7deca] bg-white shadow-sm',
+    logo: 'h-12 max-w-[168px] rounded-xl border border-[#d7deca] bg-white px-2 shadow-sm',
     active: 'bg-[#1f2617] text-[#edf5dc]',
     idle: 'text-[#56604b] hover:bg-[#e7edd9] hover:text-[#1f2617]',
     cta: 'rounded-lg bg-[#1f2617] text-[#edf5dc] hover:bg-[#2f3a24]',
@@ -106,9 +109,15 @@ export function Navbar() {
       <header className={cn('sticky top-0 z-50 w-full', shell)}>
         <nav className="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff2d55]/12">
-              <MapPin className="h-5 w-5 text-[#ff2d55]" aria-hidden />
-            </span>
+            <div className="flex h-10 max-w-[152px] shrink-0 items-center overflow-hidden rounded-xl border border-zinc-200/90 bg-[#fffdfb] px-2 py-1 shadow-sm">
+              <img
+                src={SITE_LOGO_SRC}
+                alt={`${SITE_CONFIG.name} logo`}
+                width={132}
+                height={40}
+                className="h-8 w-auto max-h-8 object-contain object-left"
+              />
+            </div>
             <div className="min-w-0 leading-tight">
               <span className="block truncate text-lg font-bold tracking-tight">{SITE_CONFIG.name}</span>
               <span className="block truncate text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500">{siteContent.navbar.tagline}</span>
@@ -272,8 +281,14 @@ export function Navbar() {
         <nav className={cn('mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8', isFloating ? 'h-24 pt-4' : 'h-20')}>
           <div className="flex min-w-0 items-center gap-3">
             <Link href="/" className="flex min-w-0 items-center gap-3">
-              <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden p-1.5', style.logo)}>
-                <img src="/favicon.png?v=20260401" alt={`${SITE_CONFIG.name} logo`} width="48" height="48" className="h-full w-full object-contain" />
+              <div className={cn('flex shrink-0 items-center justify-center overflow-hidden py-1.5', style.logo)}>
+                <img
+                  src={SITE_LOGO_SRC}
+                  alt={`${SITE_CONFIG.name} logo`}
+                  width={148}
+                  height={44}
+                  className="h-9 w-auto max-h-9 object-contain object-left"
+                />
               </div>
               <div className="min-w-0">
                 <span className="block truncate text-lg font-semibold">{SITE_CONFIG.name}</span>
@@ -319,8 +334,14 @@ export function Navbar() {
       <aside className={cn('hidden xl:fixed xl:inset-y-0 xl:left-0 xl:z-40 xl:flex xl:w-80 xl:flex-col xl:overflow-y-auto xl:border-r xl:px-6 xl:py-7', style.shell)}>
         <div className="flex h-full flex-col">
           <Link href="/" className="flex items-center gap-3">
-            <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden p-1.5', style.logo)}>
-              <img src="/favicon.png?v=20260401" alt={`${SITE_CONFIG.name} logo`} width="48" height="48" className="h-full w-full object-contain" />
+            <div className={cn('flex shrink-0 items-center justify-center overflow-hidden py-1.5', style.logo)}>
+              <img
+                src={SITE_LOGO_SRC}
+                alt={`${SITE_CONFIG.name} logo`}
+                width={148}
+                height={44}
+                className="h-9 w-auto max-h-9 object-contain object-left"
+              />
             </div>
             <div className="min-w-0">
               <span className="block truncate text-xl font-semibold">{SITE_CONFIG.name}</span>
