@@ -25,8 +25,10 @@ const taskIcons: Record<TaskKey, any> = {
 }
 
 const variantShells = {
-  'listing-directory': 'bg-gradient-to-b from-white via-zinc-50/80 to-zinc-100/60',
-  'listing-showcase': 'bg-gradient-to-b from-white via-zinc-50/80 to-zinc-100/60',
+  'listing-directory':
+    'bg-[linear-gradient(180deg,#fffdfb_0%,#faf5f1_45%,#f3e8df_100%)] text-[#1a1614]',
+  'listing-showcase':
+    'bg-[linear-gradient(180deg,#fffdfb_0%,#faf5f1_45%,#f3e8df_100%)] text-[#1a1614]',
   'article-editorial': 'bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.08),transparent_20%),linear-gradient(180deg,#fff8ef_0%,#ffffff_100%)]',
   'article-journal': 'bg-[linear-gradient(180deg,#fffdf9_0%,#f7f1ea_100%)]',
   'image-masonry': 'bg-[linear-gradient(180deg,#09101d_0%,#111c2f_100%)] text-white',
@@ -77,13 +79,22 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
           input: 'border border-[#dbc6b6] bg-white text-[#2f1d16]',
           button: 'bg-[#2f1d16] text-[#fff4e4] hover:bg-[#452920]',
         }
-      : {
-          muted: 'text-zinc-600',
-          panel: 'border border-zinc-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.06)]',
-          soft: 'border border-zinc-200 bg-zinc-50',
-          input: 'border border-zinc-200 bg-white text-zinc-900',
-          button: 'bg-[#ff2d55] text-white hover:bg-[#e6294d]',
-        }
+      : layoutKey.startsWith('listing')
+        ? {
+            muted: 'text-[#6b534c]',
+            panel:
+              'border border-[#e8ddd4] bg-white/95 shadow-[0_24px_70px_rgba(183,110,121,0.09)]',
+            soft: 'border border-[#ead6d0] bg-[#fff9f7]',
+            input: 'border border-[#e0cfc9] bg-white text-[#1a1614]',
+            button: 'bg-[#b76e79] text-white hover:bg-[#9e5e6a]',
+          }
+        : {
+            muted: 'text-zinc-600',
+            panel: 'border border-zinc-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.06)]',
+            soft: 'border border-zinc-200 bg-zinc-50',
+            input: 'border border-zinc-200 bg-white text-zinc-900',
+            button: 'bg-[#ff2d55] text-white hover:bg-[#e6294d]',
+          }
 
   return (
     <div className={`min-h-screen ${shellClass}`}>
@@ -95,7 +106,7 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
               {
                 '@context': 'https://schema.org',
                 '@type': 'ItemList',
-                name: 'Business Directory Listings',
+                name: 'Lash & beauty directory listings',
                 itemListElement: schemaItems,
               },
               {
@@ -122,26 +133,54 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
 
         {layoutKey === 'listing-directory' || layoutKey === 'listing-showcase' ? (
           <section className="mb-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-            <div className={`rounded-[2rem] p-7 shadow-[0_24px_70px_rgba(15,23,42,0.07)] ${ui.panel}`}>
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] opacity-70"><Icon className="h-4 w-4" /> {taskConfig?.label || task}</div>
-              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-foreground">{taskConfig?.description || 'Latest posts'}</h1>
-              <p className={`mt-4 max-w-2xl text-sm leading-7 ${ui.muted}`}>Built with a cleaner scan rhythm, stronger metadata grouping, and a structure designed for business discovery rather than editorial reading.</p>
+            <div className={`rounded-[2rem] p-7 shadow-[0_24px_70px_rgba(183,110,121,0.1)] ${ui.panel}`}>
+              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-[#b76e79]">
+                <Icon className="h-4 w-4" /> Browse listings
+              </div>
+              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-foreground">
+                Discover lash artists, studios, and beauty partners
+              </h1>
+              <p className={`mt-4 max-w-2xl text-sm leading-7 ${ui.muted}`}>
+                Explore curated professionals offering extensions, lifts, fills, and aftercare—organized
+                so you can compare services, locations, and specialties without clutter.
+              </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={taskConfig?.route || '#'} className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${ui.button}`}>Explore results <ArrowRight className="h-4 w-4" /></Link>
-                <Link href="/search" className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${ui.soft}`}>Open search</Link>
+                <Link
+                  href={taskConfig?.route || '#'}
+                  className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${ui.button}`}
+                >
+                  View directory <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/search"
+                  className={`inline-flex items-center gap-2 rounded-full border border-[#e0cfc9] px-5 py-3 text-sm font-semibold text-[#1a1614] hover:bg-[#fff9f7]`}
+                >
+                  Refine search
+                </Link>
               </div>
             </div>
-            <form className={`grid gap-3 rounded-[2rem] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] ${ui.soft}`} action={taskConfig?.route || '#'}>
+            <form
+              className={`grid gap-3 rounded-[2rem] p-6 shadow-[0_18px_50px_rgba(183,110,121,0.08)] ${ui.soft}`}
+              action={taskConfig?.route || '#'}
+            >
               <div>
                 <label className={`text-xs uppercase tracking-[0.2em] ${ui.muted}`}>Category</label>
-                <select name="category" defaultValue={normalizedCategory} className={`mt-2 h-11 w-full rounded-xl px-3 text-sm ${ui.input}`}>
+                <select
+                  name="category"
+                  defaultValue={normalizedCategory}
+                  className={`mt-2 h-11 w-full rounded-xl px-3 text-sm ${ui.input}`}
+                >
                   <option value="all">All categories</option>
                   {CATEGORY_OPTIONS.map((item) => (
-                    <option key={item.slug} value={item.slug}>{item.name}</option>
+                    <option key={item.slug} value={item.slug}>
+                      {item.name}
+                    </option>
                   ))}
                 </select>
               </div>
-              <button type="submit" className={`h-11 rounded-xl text-sm font-medium ${ui.button}`}>Apply filters</button>
+              <button type="submit" className={`h-11 rounded-xl text-sm font-medium ${ui.button}`}>
+                Apply filters
+              </button>
             </form>
           </section>
         ) : null}

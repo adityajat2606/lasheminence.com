@@ -210,10 +210,10 @@ export default function NewListingPage() {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[linear-gradient(180deg,#fffdfb_0%,#faf5f1_100%)] text-[#1a1614]">
         <NavbarShell />
         <main className="mx-auto flex max-w-5xl flex-col items-center justify-center px-4 py-24 text-center">
-          <p className="text-muted-foreground">Loading…</p>
+          <p className="text-[#6b534c]">Loading…</p>
         </main>
       </div>
     )
@@ -221,41 +221,60 @@ export default function NewListingPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[linear-gradient(180deg,#fffdfb_0%,#faf5f1_100%)] text-[#1a1614]">
         <NavbarShell />
         <main className="mx-auto flex max-w-5xl flex-col items-center justify-center px-4 py-24 text-center">
-          <p className="text-muted-foreground">Redirecting to sign in…</p>
+          <p className="text-[#6b534c]">Redirecting to sign in…</p>
         </main>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fffdfb_0%,#faf5f1_50%,#f3e8df_100%)] text-[#1a1614]">
       <NavbarShell />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              className="text-[#1a1614] hover:bg-[#fff9f7]"
+            >
               <Link href="/listings">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">New Business Listing</h1>
-              <p className="text-sm text-muted-foreground">
-                Add your business to our directory
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#b76e79]">
+                Add listing
+              </p>
+              <h1 className="text-2xl font-bold tracking-tight text-[#1a1614]">
+                Publish your studio or lash practice
+              </h1>
+              <p className="mt-1 text-sm text-[#6b534c]">
+                Rich details help guests book with confidence—take your time with photos and hours.
               </p>
             </div>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={handleSaveDraft} disabled={isSaving}>
-              <Save className="h-4 w-4 mr-2" />
+          <div className="flex flex-wrap gap-3">
+            <Button
+              variant="outline"
+              onClick={handleSaveDraft}
+              disabled={isSaving}
+              className="rounded-full border-[#e0cfc9] bg-white/90 text-[#1a1614] hover:bg-[#fff9f7]"
+            >
+              <Save className="mr-2 h-4 w-4" />
               {isSaving ? "Saving..." : "Save Draft"}
             </Button>
-            <Button onClick={handleSubmit} disabled={isSubmitting}>
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="rounded-full bg-[#b76e79] text-white hover:bg-[#9e5e6a]"
+            >
               {isSubmitting ? "Submitting..." : "Submit for Review"}
             </Button>
           </div>
@@ -268,11 +287,9 @@ export default function NewListingPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-card rounded-xl border border-border p-6"
+              className="rounded-xl border border-[#e8ddd4] bg-white/95 p-6 shadow-[0_14px_40px_rgba(183,110,121,0.06)]"
             >
-              <h2 className="text-lg font-semibold text-foreground mb-6">
-                Basic Information
-              </h2>
+              <h2 className="mb-6 text-lg font-semibold text-[#1a1614]">Basic Information</h2>
               <div className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Business Name *</Label>
@@ -318,11 +335,9 @@ export default function NewListingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-card rounded-xl border border-border p-6"
+              className="rounded-xl border border-[#e8ddd4] bg-white/95 p-6 shadow-[0_14px_40px_rgba(183,110,121,0.06)]"
             >
-              <h2 className="text-lg font-semibold text-foreground mb-6">
-                Contact Information
-              </h2>
+              <h2 className="mb-6 text-lg font-semibold text-[#1a1614]">Contact Information</h2>
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="address">
@@ -396,10 +411,10 @@ export default function NewListingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-card rounded-xl border border-border p-6"
+              className="rounded-xl border border-[#e8ddd4] bg-white/95 p-6 shadow-[0_14px_40px_rgba(183,110,121,0.06)]"
             >
-              <h2 className="text-lg font-semibold text-foreground mb-6">
-                <Clock className="h-5 w-5 inline mr-2" />
+              <h2 className="mb-6 text-lg font-semibold text-[#1a1614]">
+                <Clock className="mr-2 inline h-5 w-5" />
                 Business Hours
               </h2>
               <div className="space-y-4">
@@ -455,10 +470,10 @@ export default function NewListingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-card rounded-xl border border-border p-6"
+              className="rounded-xl border border-[#e8ddd4] bg-white/95 p-6 shadow-[0_14px_40px_rgba(183,110,121,0.06)]"
             >
-              <Label className="mb-4 block">
-                <ImageIcon className="h-4 w-4 inline mr-2" />
+              <Label className="mb-4 block text-[#1a1614]">
+                <ImageIcon className="mr-2 inline h-4 w-4" />
                 Business Photos
               </Label>
               
@@ -523,11 +538,9 @@ export default function NewListingPage() {
                   ))}
                 </div>
               ) : (
-                <div className="aspect-video rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground text-center">
-                    Add photos of your business
-                  </p>
+                <div className="flex aspect-video cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#e0cfc9] transition-colors hover:border-[#b76e79]/40">
+                  <ImageIcon className="h-8 w-8 text-[#b76e79]" />
+                  <p className="text-center text-sm text-[#6b534c]">Add photos of your business</p>
                 </div>
               )}
               <p className="text-xs text-muted-foreground mt-4">
@@ -540,16 +553,14 @@ export default function NewListingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-card rounded-xl border border-border p-6"
+              className="rounded-xl border border-[#e8ddd4] bg-[#fffdfb] p-6 shadow-[0_14px_40px_rgba(183,110,121,0.05)]"
             >
-              <h3 className="font-semibold text-foreground mb-4">
-                Submission Guidelines
-              </h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>- All listings are reviewed before publishing</li>
-                <li>- Provide accurate and up-to-date information</li>
-                <li>- Review typically takes 1-2 business days</li>
-                <li>- You'll be notified once your listing is approved</li>
+              <h3 className="mb-4 font-semibold text-[#1a1614]">Submission guidelines</h3>
+              <ul className="space-y-2 text-sm text-[#5c4a45]">
+                <li>— Listings are reviewed for accuracy and guest safety before publishing.</li>
+                <li>— Use real studio imagery and truthful service descriptions.</li>
+                <li>— Most reviews finish within one to two business days.</li>
+                <li>— You will hear from us if we need clarifications or edits.</li>
               </ul>
             </motion.div>
           </div>
