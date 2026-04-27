@@ -26,7 +26,7 @@ const NavbarAuthControls = dynamic(() => import('@/components/shared/navbar-auth
 })
 
 /** Full brand lockup for the header (distinct from square favicon/tab icon). */
-const SITE_LOGO_SRC = '/logo.png?v=20260416'
+const SITE_LOGO_SRC = '/logo.png?v=20260427'
 
 const taskIcons: Record<TaskKey, any> = {
   article: FileText,
@@ -128,9 +128,6 @@ export function Navbar() {
             <Link href="/" className={linkClass('/')}>
               Home
             </Link>
-            <Link href="/listings" className={linkClass('/listings')}>
-              Browse listings
-            </Link>
             <Link href="/search" className={linkClass('/search')}>
               Search
             </Link>
@@ -215,7 +212,6 @@ export function Navbar() {
               </Link>
               {[
                 { href: '/', label: 'Home' },
-                { href: '/listings', label: 'Browse listings' },
                 { href: '/about', label: 'About' },
                 { href: '/contact', label: 'Contact' },
               ].map((item) => (

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { ArrowRight, Building2, FileText, Image as ImageIcon, LayoutGrid, Tag, User } from 'lucide-react'
 import { NavbarShell } from '@/components/shared/navbar-shell'
 import { Footer } from '@/components/shared/footer'
@@ -9,6 +9,7 @@ import { SITE_CONFIG, getTaskConfig, type TaskKey } from '@/lib/site-config'
 import { CATEGORY_OPTIONS, normalizeCategory } from '@/lib/categories'
 import { taskIntroCopy } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
+import { getDirectoryUiPreset } from '@/design/directory-ui'
 import { TASK_LIST_PAGE_OVERRIDE_ENABLED, TaskListPageOverride } from '@/overrides/task-list-page'
 
 const taskIcons: Record<TaskKey, any> = {
@@ -58,8 +59,9 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
     name: post.title,
   }))
   const { recipe } = getFactoryState()
+  const directoryUi = getDirectoryUiPreset()
   const layoutKey = recipe.taskLayouts[task as keyof typeof recipe.taskLayouts] || `${task}-${task === 'listing' ? 'directory' : 'editorial'}`
-  const shellClass = variantShells[layoutKey as keyof typeof variantShells] || 'bg-background'
+  const shellClass = task === 'listing' ? directoryUi.shell : variantShells[layoutKey as keyof typeof variantShells] || 'bg-background'
   const Icon = taskIcons[task] || LayoutGrid
 
   const isDark = ['image-masonry', 'image-portfolio', 'profile-creator'].includes(layoutKey)
@@ -141,7 +143,7 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
                 Discover lash artists, studios, and beauty partners
               </h1>
               <p className={`mt-4 max-w-2xl text-sm leading-7 ${ui.muted}`}>
-                Explore curated professionals offering extensions, lifts, fills, and aftercare—organized
+                Explore curated professionals offering extensions, lifts, fills, and aftercareâ€”organized
                 so you can compare services, locations, and specialties without clutter.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -296,3 +298,4 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
     </div>
   )
 }
+

@@ -3,6 +3,7 @@ import { Mail, MapPin, Sparkles, Building2 } from "lucide-react";
 import { BrandMarketingShell } from "@/components/marketing/brand-marketing-shell";
 import { CONTACT_PAGE_OVERRIDE_ENABLED, ContactPageOverride } from "@/overrides/contact-page";
 import { SITE_CONFIG } from "@/lib/site-config";
+import { Button } from "@/components/ui/button";
 
 const lanes = [
   {
@@ -21,6 +22,8 @@ const lanes = [
     body: "Editorial features, local collaborations, and brand-aligned campaigns that celebrate craftsmanship in the lash community.",
   },
 ];
+
+const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "contact@lasheminence.com";
 
 export default function ContactPage() {
   if (CONTACT_PAGE_OVERRIDE_ENABLED) {
@@ -47,10 +50,21 @@ export default function ContactPage() {
           ))}
           <div className="flex items-start gap-3 rounded-2xl border border-dashed border-[#e0cfc9] bg-[#fffdfb] p-5">
             <Mail className="mt-0.5 h-5 w-5 shrink-0 text-[#b76e79]" />
-            <p className="text-sm leading-relaxed text-[#5c4a45]">
-              Prefer email? Use the form—your message lands in the same inbox we monitor daily. Typical
-              replies within one to two business days.
-            </p>
+            <div className="flex-1">
+              <p className="text-sm leading-relaxed text-[#5c4a45]">
+                Prefer email? Use the form—your message lands in the same inbox we monitor daily. Typical
+                replies within one to two business days.
+              </p>
+              <Button
+                asChild
+                className="mt-4 h-10 rounded-full bg-[#b76e79] text-white hover:bg-[#9e5e6a]"
+              >
+                <a href={`mailto:${contactEmail}`}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email us directly
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
 
