@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Globe, Mail, MapPin, Phone, ShieldCheck, Tag } f
 import { ContentImage } from '@/components/shared/content-image'
 import { SchemaJsonLd } from '@/components/seo/schema-jsonld'
 import { TaskPostCard } from '@/components/shared/task-post-card'
+import { RichContent, formatRichHtml } from '@/components/shared/rich-content'
 import type { SitePost } from '@/lib/site-connector'
 import type { TaskKey } from '@/lib/site-config'
 import { getDirectoryUiPreset } from '@/design/directory-ui'
@@ -35,6 +36,7 @@ export function DirectoryTaskDetailPage({
   const email = typeof content.email === 'string' ? content.email : ''
   const highlights = Array.isArray(content.highlights) ? content.highlights.filter((item): item is string => typeof item === 'string') : []
   const ui = getDirectoryUiPreset()
+  const descriptionHtml = formatRichHtml(description, 'Details coming soon.')
   const schemaPayload = {
     '@context': 'https://schema.org',
     '@type': task === 'profile' ? 'Organization' : 'LocalBusiness',
@@ -104,7 +106,7 @@ export function DirectoryTaskDetailPage({
           <article className={`rounded-2xl p-8 sm:p-10 ${ui.detailPanel}`}>
             <p className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${ui.eyebrow}`}>About</p>
             <h2 className={`mt-4 text-3xl font-semibold ${ui.title}`}>Overview</h2>
-            <p className={`mt-6 max-w-3xl text-base leading-8 ${ui.muted}`}>{description}</p>
+            <RichContent html={descriptionHtml} className={`mt-6 max-w-3xl text-base leading-8 ${ui.muted}`} />
             {highlights.length ? (
               <div className="mt-10">
                 <h3 className={`text-lg font-semibold ${ui.title}`}>Key Features</h3>
